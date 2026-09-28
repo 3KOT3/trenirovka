@@ -1,18 +1,22 @@
+package webshop.test;
+
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import page.RegistrationPage;
+import webshop.TestBase;
+import webshop.page.RegistrationPage;
 
-import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
-import static config.Config.WEBSHOP_HOST;
+import static webshop.config.Config.WEBSHOP_HOST;
+import static webshop.util.TestData.*;
 
-public class RegistrationTest {
+public class RegistrationTest extends TestBase {
 
-    private static final Faker faker = new Faker();
-    String password = faker.gameOfThrones().character() + faker.number().randomNumber();
-    String email = faker.internet().emailAddress();
+    private String email = randomEmail();
+    private String password = randomPassword();
+    private String lastName = randomLastName();
+    private String firtName = randomFirstName();
 
     @Test
     @DisplayName("Успешная регистрация нового пользователя")
@@ -20,14 +24,14 @@ public class RegistrationTest {
 
         open(WEBSHOP_HOST, RegistrationPage.class)
                 .registrationButton()
-                .checkRegistrationPage("Register")
+                .checkRegistrationPage()
                 .enterGenderFemale()
-                .enterFirstName(faker.name().firstName())
-                .enterLastName(faker.name().lastName())
+                .enterFirstName(firtName)
+                .enterLastName(lastName)
                 .enterEmail(email)
                 .enterPassword(password)
                 .enterConfirmedPassword(password)
                 .enterRegistrationButton()
-                .checkHappyRegistration("Your registration completed");
+                .checkHappyRegistration();
     }
 }
