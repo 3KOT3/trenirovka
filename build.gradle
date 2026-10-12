@@ -34,8 +34,38 @@ dependencies {
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
     testImplementation "io.qameta.allure:allure-junit5:${allureVersion}"
     testImplementation "io.qameta.allure:allure-selenide:${allureVersion}"
+    testImplementation 'org.aeonbits.owner:owner:1.0.12'
 }
 
 test {
+    systemProperty "run", System.getProperty("run", "local")
     useJUnitPlatform()
+}
+
+task uiTest(type: Test) {
+    def tag = System.getProperty("tag")
+
+    if (tag != null && !tag.isBlank()) {
+        useJUnitPlatform {
+            includeTags "UI & $tag"
+        }
+    } else {
+        useJUnitPlatform {
+            includeTags "UI"
+        }
+    }
+}
+
+task apiTest(type: Test) {
+    def tag = System.getProperty("tag")
+
+    if (tag != null && !tag.isBlank()) {
+        useJUnitPlatform {
+            includeTags "API & $tag"
+        }
+    } else {
+        useJUnitPlatform {
+            includeTags "API"
+        }
+    }
 }

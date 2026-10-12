@@ -11,7 +11,7 @@ import static webshop.config.Config.WEBSHOP_HOST;
 public class RegistrationPage {
 
     private final SelenideElement registerButton = $(".ico-register");
-    private final SelenideElement checkRegisterPage = $(".webshop.page-title");
+    private final SelenideElement checkRegisterPage = $("div.registration-page .page-title");
     private final SelenideElement selectGender = $("#gender-female");
     private final SelenideElement FirstNameInput = $("#FirstName");
     private final SelenideElement LastNameInput = $("#LastName");
@@ -19,7 +19,7 @@ public class RegistrationPage {
     private final SelenideElement passwordInput = $("#Password");
     private final SelenideElement confirmPasswordInput = $("#ConfirmPassword");
     private final SelenideElement clickRegistrationButton = $("#register-button");
-    private final SelenideElement HappyRegistration = $(".registration-result-webshop.page .result");
+    private final SelenideElement HappyRegistration = $("div.registration-result-page .page-body");
 
     public RegistrationPage registration(String firstName, String lastName, String email, String password) {
         registrationButton()
