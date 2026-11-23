@@ -1,46 +1,43 @@
 package booking.test;
 
+import booking.TestBase;
+import booking.apiclient.ApiClient;
+import booking.assertions.ResponseAssertions;
 import booking.dto.CreateBookingRequest;
 import booking.dto.CreateBookingResponse;
-import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Tag;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
-import webshop.TestBase;
 
-import static booking.config.Config.BOOKING_URL;
-import static io.restassured.RestAssured.given;
+import static booking.config.SchemaPaths.BOOKING_SCHEMA;
+import static booking.factory.BookingRequestFactory.buildCreateBooking;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class CreateBookingPositiveTest extends TestBase {
 
     @Test
-    @Tag("positive")
-    public void createBookingTest() {
+    void createBookingHappyPassTest() {
 
-        CreateBookingResponse response = given()
-                .contentType(ContentType.JSON)
-                .body(buidCreateBooking())
-                .post(BOOKING_URL + "/booking")
-                .then()
-                .statusCode(200)
-                .extract().as(CreateBookingResponse.class);
+        ApiClient apiClient = new ApiClient();
 
-        assertThat(response.getBooking()).isNotNull();
-        assertThat(response.getBooking().getTotalprice()).isEqualTo(1111111);
-        assertThat(response.getBooking().getBookingdates().getCheckin()).isEqualTo("2018-01-01");
-        assertThat(response.getBooking().getDepositpaid()).isTrue();
-    }
+        CreateBookingRequest request = buildCreateBooking();
 
-    private static CreateBookingRequest buidCreateBooking() {
-        return CreateBookingRequest.builder()
-                .lastname("Jon")
-                .firstname("Sina")
-                .totalprice(1111111)
-                .depositpaid(true)
-                .bookingdates(CreateBookingRequest.BookingDates.builder()
-                        .checkin("2018-01-01")
-                        .checkout("2019-01-01")
-                        .build())
-                .additionalneeds("cake").build();
+        Response responseCreate = apiClient.createBooking(request);
+
+        CreateBookingResponse response = responseCreate.as(CreateBookingResponse.class);
+
+        assertAll(
+                () -> assertThat(responseCreate.getStatusCode()).isEqualTo(200),
+                () -> ResponseAssertions.checkJsonSchema(responseCreate, BOOKING_SCHEMA),
+                () -> assertThat(response.getBookingid()).isPositive(),
+                () -> assertThat(response.getBooking().getFirstname()).isEqualTo(request.getFirstname()),
+                () -> assertThat(response.getBooking().getLastname()).isEqualTo(request.getLastname()),
+                () -> assertThat(response.getBooking().getTotalprice()).isEqualTo(request.getTotalprice()),
+                () -> assertThat(response.getBooking().isDepositpaid()).isEqualTo(request.isDepositpaid()),
+                () -> assertThat(response.getBooking().getBookingdates().getCheckin())
+                        .isEqualTo(request.getBookingdates().getCheckin()),
+                () -> assertThat(response.getBooking().getBookingdates().getCheckout())
+                        .isEqualTo(request.getBookingdates().getCheckout())
+        );
     }
 }

@@ -1,5 +1,6 @@
 package booking.dto;
 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,25 +8,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder(toBuilder = true)
 public class CreateBookingRequest {
 
     private String firstname;
     private String lastname;
-    private Integer totalprice;
-    private Boolean depositpaid;
+    private int totalprice;
+    private boolean depositpaid;
     private BookingDates bookingdates;
-    private String additionalneeds;
 
     @Data
-    @NoArgsConstructor
     @AllArgsConstructor
-    @Builder
+    @NoArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Builder(toBuilder = true)
     public static class BookingDates {
+
         private String checkin;
         private String checkout;
     }

@@ -1,41 +1,29 @@
 package booking.test;
 
 import booking.TestBase;
-import booking.dto.AuthRequest;
-import booking.dto.AuthResponse;
-import io.qameta.allure.restassured.AllureRestAssured;
-import io.restassured.RestAssured;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
-import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
+import booking.apiclient.ApiClient;
+import booking.assertions.ResponseAssertions;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
-import static booking.config.Config.BOOKING_URL;
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
+import static booking.config.SchemaPaths.AUTH_SCHEMA;
+import static booking.factory.AuthRequestFactory.buildAuthRequest;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 
 public class AuthPositiveTest extends TestBase {
-
+    ApiClient apiClient = new ApiClient();
 
     @Test
-    @DisplayName("Успешная авторизация с валидными данными")
-    @Tag("positive")
-    public void authTest() {
+    void authHappyPassTest() {
 
-        String user = "admin";
-        String password = "password123";
+        Response responseAuth = apiClient.auth(buildAuthRequest());
 
-        AuthResponse response = given()                                   // дало
-                .contentType(ContentType.JSON)
-                .body(new AuthRequest(user, password))
-                .post(BOOKING_URL + "/auth")
-                .then()                                                  // проверки
-                .statusCode(200)
-                .extract().as(AuthResponse.class);
-
-        assertThat(response.getToken()).isNotNull();                     // assertThat - убедиться что
+        assertAll(
+                () -> assertThat(responseAuth.getStatusCode()).isEqualTo(200),
+                () -> assertThat(responseAuth.jsonPath().getString("token")).isNotBlank(),
+                () -> ResponseAssertions.checkJsonSchema(responseAuth, AUTH_SCHEMA)
+        );
     }
 }
