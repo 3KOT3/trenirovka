@@ -19,7 +19,7 @@ public class TestData {
         return faker.internet().emailAddress();
     }
 
-    public static String randomPassword(){
+    public static String randomPassword() {
         return faker.gameOfThrones().character() + faker.number().randomNumber();
     }
 }

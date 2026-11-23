@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id("io.qameta.allure") version "4.3.0"
+    id("io.freefair.lombok") version "9.8.2"
 }
 
 def allureVersion = "2.32.0"
@@ -34,38 +35,17 @@ dependencies {
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
     testImplementation "io.qameta.allure:allure-junit5:${allureVersion}"
     testImplementation "io.qameta.allure:allure-selenide:${allureVersion}"
+    testImplementation "io.qameta.allure:allure-rest-assured:${allureVersion}"
+    testImplementation "io.qameta.allure:allure-assertj:${allureVersion}"
     testImplementation 'org.aeonbits.owner:owner:1.0.12'
+    testImplementation 'io.rest-assured:rest-assured:6.3.0'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+    testImplementation 'org.assertj:assertj-core:3.27.7'
+    testImplementation 'io.rest-assured:json-schema-validator:6.3.0'
 }
 
 test {
     systemProperty "run", System.getProperty("run", "local")
     useJUnitPlatform()
-}
-
-task uiTest(type: Test) {
-    def tag = System.getProperty("tag")
-
-    if (tag != null && !tag.isBlank()) {
-        useJUnitPlatform {
-            includeTags "UI & $tag"
-        }
-    } else {
-        useJUnitPlatform {
-            includeTags "UI"
-        }
-    }
-}
-
-task apiTest(type: Test) {
-    def tag = System.getProperty("tag")
-
-    if (tag != null && !tag.isBlank()) {
-        useJUnitPlatform {
-            includeTags "API & $tag"
-        }
-    } else {
-        useJUnitPlatform {
-            includeTags "API"
-        }
-    }
+    testLogging.showStandardStreams = true
 }
